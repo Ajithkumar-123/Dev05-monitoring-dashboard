@@ -1,0 +1,49 @@
+R-2# C++ Aspose container archetype — needs licensed Aspose.Total binary
+# mounted as a Kubernetes Secret at runtime. Image itself contains no
+# licensed binary (per multi-language-units.md § 8.4 / lessons).
+
+image:
+  repository: 537462380503.dkr.ecr.eu-west-1.amazonaws.com/docuploader/office-conversion-aspose-container
+  pullPolicy: IfNotPresent
+
+iamRoleArn: arn:aws:iam::537462380503:role/docuploader-office-conversion-aspose-dev05
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+extraVolumes:
+  - name: aspose-license
+    secret:
+      secretName: aspose-total-license
+      items:
+        - key: Aspose.Total.Product.Family.lic
+          path: Aspose.Total.Product.Family.lic
+          mode: 0400
+
+extraVolumeMounts:
+  - name: aspose-license
+    mountPath: /etc/aspose
+    readOnly: true
+
+extraEnv:
+  - name: ASPOSE_LICENSE_PATH
+    value: /etc/aspose/Aspose.Total.Product.Family.lic
+  - name: LISTEN_ADDR
+    value: ":8080"
+
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 8080
+  readiness:
+    httpGet:
+      path: /readyz
+      port: 8080

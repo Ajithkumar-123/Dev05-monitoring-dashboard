@@ -1,0 +1,17 @@
+{
+  "scope": "project",
+  "unit_id": null,
+  "current_cluster": "aidlc-requirements-analyst",
+  "current_stage": "requirements-analysis",
+  "last_envelope": {
+    "status": "GATE_QUESTIONS",
+    "scope": "project",
+    "unit_id": null,
+    "current_stage": "requirements-analysis",
+    "gate_id": "questions",
+    "artifact_path": "aidlc-docs/inception/requirements/requirement-verification-questions.md",
+    "message": "I've created aidlc-docs/inception/requirements/requirement-verification-questions.md with 42 verification questions (40 ratification questions over the vision.md / tech-environment.md inputs plus 2 extension opt-in questions for security-baseline and property-based-testing). Please fill in the [Answer]: tags using the lettered choices (use option X) Other and a description if none of the supplied choices fit), then reply 'done' or re-run /aidlc-project-inception when complete.",
+    "next_stage": "requirements-analysis"
+  },
+  "last_updated": "2026-05-08T00:02:00Z"
+}

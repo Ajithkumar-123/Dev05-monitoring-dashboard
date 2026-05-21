@@ -1,0 +1,17 @@
+{{ include "docuploader-chassis.serviceAccount" . }}
+---
+{{ include "docuploader-chassis.deployment" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP

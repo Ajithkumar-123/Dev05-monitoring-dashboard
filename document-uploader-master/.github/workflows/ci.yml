@@ -1,0 +1,156 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lib-data-access:
+    name: LIB-04 — libs/data-access (Go + Python + TypeScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Go ---
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: true
+          cache-dependency-path: libs/data-access/go/go.sum
+      - name: Go tests
+        working-directory: libs/data-access/go
+        run: |
+          go mod download
+          go test ./...
+
+      # --- Python (uv) ---
+      - uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+      - name: Python tests
+        working-directory: libs/data-access/py
+        run: |
+          uv sync --locked || uv sync
+          uv run pytest -q
+
+      # --- TypeScript (pnpm) ---
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+      - name: TS tests
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm -C libs/data-access/ts test
+
+  go-units:
+    name: Go units
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unit:
+          - workspace-resolver
+          - batch-resolver
+          - document-resolver
+          - wundergraph-router
+          - email-extraction-service
+          - pre-token-generation-lambda
+          - document-event-handler-lambda
+          - audit-event-storage-lambda
+          - update-document-state-lambda
+          - virus-scanning-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: true
+          cache-dependency-path: units/${{ matrix.unit }}/go.sum
+      - name: Test
+        working-directory: units/${{ matrix.unit }}
+        run: |
+          go mod download
+          go vet ./...
+          go test ./...
+
+  ts-units:
+    name: TS units
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Test all TS workspace packages
+        run: pnpm -r --filter "./units/*" test
+
+  py-units:
+    name: Python units
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unit:
+          - pdf-processing-service
+          - office-conversion-orchestrator-sidecar
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - working-directory: units/${{ matrix.unit }}
+        run: |
+          uv sync --locked || uv sync
+          uv run pytest -q
+
+  helm-lint:
+    name: Helm template (all unit charts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: "v3.16.2"
+      - name: helm dependency build + template every chart
+        run: |
+          set -euo pipefail
+          for d in units/*/helm; do
+            unit=$(basename "$(dirname "$d")")
+            [[ "$unit" == "platform-network-and-compute" ]] && continue
+            [[ ! -f "$d/Chart.yaml" ]] && continue
+            echo "=== $unit ==="
+            helm dependency build "$d"
+            helm template "$unit" "$d" \
+              --set iamRoleArn="arn:aws:iam::000000000000:role/test" \
+              --set image.repository="test/repo" \
+              --skip-tests > /dev/null
+          done
+
+  kustomize:
+    name: Kustomize render — Phase C bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: kubectl kustomize deploy/argocd-dev05 > /dev/null
+
+  terraform-fmt:
+    name: terraform fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+      - run: terraform fmt -check -recursive units/platform-*

@@ -1,0 +1,458 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "aidlcVersion": "v0.1.8",
+  "installedAt": "2026-05-08T08:51:11.677Z",
+  "files": {
+    ".ai-dlc-bootstrap/scaffold/lib/argv.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:bd938b3b4360351a4e3a8c10063553ae30ca3c98d5eec475c6b25e957e3d9dad",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/assert-marker.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:d0ce8a18b23b0a16ed2799e59e9c54d3e748d7162d3d3545a1e5d12514299216",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/audit-review.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:1b2e8e14418c15a5a63b523c071b6975fc795d20b5ae2b9432ede92d55baa1b7",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/description-persistence.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:8e9b42b96b6b40ecb920beb5664352ce6188a509191b6bc5ac2fad4693e4a72c",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/dispatch.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:34f15abaa81d9cc01416f15ec6305bf76d4f4ceb94aae6ab9ef4a408e3791d05",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/envelope-validator.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:9be9c79c6861723a706b3516c783ef18e925eadd8b0c9902e2c61b70d8eb9e99",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/escalate-fix-orchestrate.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:74e81f14282e8dac193b37925dba6fdc170a95758625dc132c83fe389ae78388",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/escalate-fix.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:e5067e88711dd90569e3b94ae31cc79e495ed9ee0674ade8e65ee21569c4a7f3",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/escalation-marker.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:c6dae3d421a3b653157b2c1b7f5e9c902fabceee7c309027410b98409abb71fb",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/extract-unit-path.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:f398e7a9d4c416d04edde766ed011e62e61a1d967b1e4741640f850e93859c7c",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/git-probes.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:c0b58ef25f925bec41519a0e06622ab7b16602510d8bdd8d6d162fc9439412bf",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/new-milestone.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:042634be45d391a02d722eb505eb41e34eaedd047c0f99358ecfa090e9e65fc3",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/parse-unit-args.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:4fbff44eb259398fa1ad3e8f13964f63f3f2737603e8f29323fb1180541971cb",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/paths.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:e541ef89ed380b5a4ec6f7282302e9ce2478c385e6e85b51f7adb2f7ce6dd50c",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/persisted-arg.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:8ea6318acf8455c6c7461ddb63b8ccd8733403086c6649b9f34febd9340ff7c4",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-change-request.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:52a3a0a2ef1a58f9a8e365d3468ae6d785aceb7ae1618a19cb4fecbe4b557412",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-escalate-fix.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:edafa9fc8b3e8a2af494bb07fd65ac7a4f481cc03532519c1b110ff9266d46a5",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-new-milestone.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:d19ae0c35eabf566299717d9045a6fb4835c0650f67cb1a037d7fd1ad4f66a60",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-project-inception.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:ad8fae80de757a5385d5f00b19f78e396e513843c3803a8744a7f98d9cada3e7",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-construct.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:66d277869699a763bdcf06dae739470426ed015ed00a1485ba7dbf2bd36cdba4",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-design.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:e60bf6d544c1164b9956104a8317d1e5bdab4dfbad7dc60c607c30cf87304260",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-inception.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:9bebf48e5e1aae18b41e1d1af7b8bdebb24aa610538c1251fcc24b29f48aa2f3",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-redesign.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:8514b02ee5fa11bbe5640b91fe78841b76a843166c4675b70043458d896ad93f",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-release.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:7c7492f55ca247f739ee1ee586d69a54e9ed1fbd5d9d4de160905ceaac4e5368",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/preflight-unit-sync.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:24f29c1a27d93bff7275a180e2f319eef7b379d9691a69af9e1fd5c35f00049a",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/progress.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:7b5e971dc3e3e879e8fe7d6b03c3a5de75fabd7d860755d67d64e811523af894",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/report.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:45dc141acb2e4dd0cc32d8fc3537f511055bab563e0c21c571cf04ac2773c57d",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/resume.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:16d4b262d3ea4a810fafdced49aebd35b48a3b4713ddbeabeb5e86901114aa47",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/run-build-and-test.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:4d4538ecd5ce8140c389b24b6dc4d3855a866e9684f94ae64be6cc0eeafe7f11",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/scaffold-unit-inception.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:9304466b1676842acf57f3995473d093b2896d827594c14cebe72fb04d5e7af7",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/state-validator.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:f7562e1ef7dbd97f8350c2d437fea1dfea8e7c9b655231a18b8a54f9a7a1dae4",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/unit-release.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:58502ee90540a33642f6678b8b2593c45b51dfc1ecd4ca2ac271cc2096015cd9",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/lib/validate-unit-path.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:99c7578428001a5cd2d8a0f4bb4cb2b3da347c8cf84b46c36e0c4bd3aa73c15a",
+      "blockHash": null
+    },
+    ".ai-dlc-bootstrap/scaffold/scaffold.js": {
+      "managed": "full-file",
+      "fileHash": "sha256:37564647e9a21929282005f7a7c21d59248e27a52bc45b58ad8458984e6d6e4d",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/ascii-diagram-standards.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:ed5a327f2b398c2fc113c3a02afd811dc1e0b23b1d681602d31bfd1aba66aae9",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/content-validation.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:1f7fc2fcfc853bf254bd1759565921298fc4ada44f2af4df4621c22c0968f09e",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/depth-levels.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:0dcfb9066290cfa4a2e228340896084efe068de7ba05c5674eed20f9b54283a8",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/error-handling.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:55abc1bc42ba35c74bf056bf3bec908eb414178f3fbc0d2c881d3978b7ec3982",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/overconfidence-prevention.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:a80aa06e6702a8d7299e6ec4dab568ac25ead8c2104a941aee4b416f830560da",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/process-overview.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:0933379f9fae39bdab0fb19d3ccb4226f73936833465c31290bc6074de386d2f",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/question-format-guide.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:a48550601ee353d6487704a668991c9a80a27df35941bb6a16b74964fddfc793",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/session-continuity.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:8999d94955a183fa779db347fbf9872b9b7a28984e5a9eb906f9a71660aeb9bb",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/terminology.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:4c533767f04a9a27f1e9a20253b2772165b22484354bbe3175fe0f8661be4c2c",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/welcome-message.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:ff4a1e9cc78fc6c7e0dee1c72d2277ecdbb944d3df6ccc5d8384060610d98687",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/common/workflow-changes.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:77585244493e12a8f080c743de72b08f8e57fd62907b5e82dca92141e3b5cf4f",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/build-and-test.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:a1237cb40fa073c9c888b0bfa55cadc71dd54cd6d492fd68a898d27f1c16523d",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/code-generation.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:95f3152992295e7470a23a842623a0ea268b52583dc9a09234532d248a796eb3",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/functional-design.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:4e7c22e25ca37a894a3e6b43b62f4f1d722c0103f6c07e043d24603d01c5bf9a",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/infrastructure-design.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:4790b9ce8b9111d1212842fc3d3d15ed561782cc977951f877a51d5e0527c61d",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/nfr-design.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:3ddb6a17adcc8ff1765797aabe0d517e52d9c10b9d184042ccc18788f742b6fe",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/construction/nfr-requirements.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:8243383c752313c14f1e6fa1b3f060d42b007410ce24364203493065f8d376d6",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/extensions/security/baseline/security-baseline.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:88d65fdd11d945c38000f6c3392f1bce82b214effc4f13d062ef51c799425ebd",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/extensions/security/baseline/security-baseline.opt-in.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:b89df8c31d96309b152e3c73334ef2cd310714b39efe5aa0d7008cb454b92848",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/extensions/testing/property-based/property-based-testing.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:33771387192a2b5ffe45c62bd799433c191f9e787d92816614baea2d53574606",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/extensions/testing/property-based/property-based-testing.opt-in.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:d06353dca763338efec0d6799b5550b1e3e2b017a5224fba8363333db0f256dc",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/application-design.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:cc1c58a97b24be882e9406691df5d728f56c2415071ecc548bf739dffe1f7d44",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/requirements-analysis.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:aa84c2081a845e1e365140dc24c364e62c3b866e7ebfc96d248711e10a9fcfb8",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/reverse-engineering.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:c62790812243fcdd6c534f9bbb3495179345808d16672ea8ef05a4b052604d42",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/units-generation.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:8e8b664d0db023e4a80209d95400cfba835b2bd40afa7ffdb5dc8853cd249329",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/user-stories.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:5aca612331c944feabb347704e203f14b1fae01d528883502c5191fd65373ce4",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/workflow-planning.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:26b6db87392bb9da6228d9e0818c09a1ed1886551c9a92577b54400d12663218",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/inception/workspace-detection.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:a833b6591df9aac4f510522952161138c6baae79661443dac51a4db59cb3d254",
+      "blockHash": null
+    },
+    ".aidlc-rule-details/operations/operations.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:d17642f5ed7589906b2d6158d0387fabba731486a6e50e76756e2c7d8db66967",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-agent-template.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:9c2fd8a76741e100a2e85a35e60356c1b00fac9f016da38c71c2f9eb289c3097",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-architect.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:b69979a93b7715e8cec61bea947a416b22b5f43bac426f485e41a996f73d17e3",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-audit-reviewer.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:52d6200a41bdb91ed01f99eef9cc92928577dfd597bcdf20207cbe8a0c9e8ed2",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-coder.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:82bb4c58ed2287a9d5e3a251e946413c6d90311d58a44615c571da3cf3077f80",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-functional-designer.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:609ea040e7c16b5cf21b3743b99bdf907c68342c67036ab6194e03907dd8e5dc",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-planner.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:5e8de4d415b9bc17a8dd44e23d422c5348c7b4783d1fdfdc734402b6f0d9a900",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-requirements-analyst.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:7cde6be2a9f84b21c105adc11c28dd35ab22d6644da538a531a03994a3b9d5ac",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-story-writer.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:f06f6882e30bafac46887d65a4d614bd6c55c599427bc18a8dca82faea7fb571",
+      "blockHash": null
+    },
+    ".claude/agents/aidlc-systems-designer.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:0094ba22a7114e7aa1c040a0486767d744b853f00d7645068af024b99a723051",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-audit-review.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:ef5a2341b36ec1464ebe5dbb35aed227358433eed4f7a79202d2a6acfea48af9",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-change-request.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:49d60689d9dd783d916e7e746959e14e9cd9624033e98a809f08723db4239ca0",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-escalate-fix-finalize.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:9c14d2f82f8100ef0a8b5799132cc2e7e5d4888fe73b887f3c9029721eb205da",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-escalate-fix.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:34f19803a3981c50ec6b8b69620acd623e3305eb729d48d019f97dab167da314",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-new-milestone.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:f7f2ccdcba9498cac89c16dac870543300cf01d9e07d65def1ff714523ad102d",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-progress.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:656777cf0087708fcd82e7a7b9c9a65b6719d01be0d2c0c76fbc48fc26f4f5be",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-project-inception.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:05fac86e68113975ec4f427e22af565adb7e4b91fc56ba0aa214c6c48e9aedee",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-resume.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:e9421360c7252e87f04e5e8d0082e2af1ecd8b75d1aea46693b050d53cc28957",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-construct.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:d110fedabae44a3d53e4be55a063cb1512619e021043bb0b9bb70b8158eda138",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-design.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:bc99f983dd8759f33e49ddc54358aeca5087f8479c938689d52070a169fb1a32",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-inception.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:45d0c50d6892a24fa857091b4f485728439356211e7f708bdd2cb046077a7fb8",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-redesign.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:9a384d35009f26c399b1081a05cd5f9040698deb25ee374ae7fb6fc5a82a7c89",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-release.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:f2da854899a1c489538768584f374bc95776ed46d33073e42adb2438eb8d787c",
+      "blockHash": null
+    },
+    ".claude/commands/aidlc-unit-sync.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:12383623b1481fa5531ed551422ec42388877089b0f131cad677bbc77bf8bb50",
+      "blockHash": null
+    },
+    ".claude/skills/aidlc-authoring/SKILL.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:b2fbb15ecb6a6060cd6f6eb91fd1a292f0081ca5dc97b021881d52685eda1c23",
+      "blockHash": null
+    },
+    ".claude/skills/aidlc-cluster-agent-pattern/SKILL.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:a3059dfcc2afbec4178b73ac2dc10169f236b42192bb240a9ec8badef7626290",
+      "blockHash": null
+    },
+    ".claude/skills/aidlc-skill-template/SKILL.md": {
+      "managed": "full-file",
+      "fileHash": "sha256:d3a4569605e7e843e004edbd71abf1898604b6448541e39414b0310ef32d7a26",
+      "blockHash": null
+    },
+    "CLAUDE.md": {
+      "managed": "merge-block",
+      "fileHash": null,
+      "blockHash": "sha256:e4cf171495d7ca91fe3e1e5b5f79e971dc0694ba33142a6e7999c6af405fa53f"
+    }
+  }
+}

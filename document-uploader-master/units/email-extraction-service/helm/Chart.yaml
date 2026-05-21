@@ -1,0 +1,10 @@
+apiVersion: v2
+name: email-extraction-service
+description: EML/MSG extraction with body + attachment fan-out (Go)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wundergraph-audit-emission
+  namespace: docuploader
+  labels:
+    app.kubernetes.io/component: docuploader
+    app.kubernetes.io/part-of: wundergraph-router
+data:
+  # Consumed by the WunderGraph router-side audit-emission custom module.
+  # URL is patched in the overlay since the SQS URL is account/region-specific.
+  AUDIT_SQS_QUEUE_URL: PATCH_ME
+
+  # Never-log set. The custom module enforces this redaction before SQS send.
+  # Source of truth: tech-environment.md § Logging / Redaction.
+  AUDIT_REDACTION_FIELDS: "presignedUrl,presignedUrlSignature,oidcToken,bearerToken,jwtRaw,kmsDataKey,apiKey,documentBytes,extractedText,piiMetadata,awsAccessKey,secretValue"
+
+  # Master switch — true at MVP.
+  AUDIT_EMISSION_ENABLED: "true"
+
+  # Message schema version. SQS bodies must carry schemaVersion per tech-environment.md.
+  AUDIT_SCHEMA_VERSION: "1"

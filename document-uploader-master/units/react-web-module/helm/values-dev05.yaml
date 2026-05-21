@@ -1,0 +1,22 @@
+# dev05 environment overlay for the docuploader monitoring dashboard.
+# Apply with: helm template ./units/react-web-module/helm \
+#               -f ./units/react-web-module/helm/values-dev05.yaml \
+#               -f ./units/react-web-module/helm/values.yaml
+#
+# Final URL after ingress provisions: https://docuploader-monitor.dev05.k8s.opus2dev.com
+environment: dev05
+
+image:
+  repository: 537462380503.dkr.ecr.eu-west-1.amazonaws.com/docuploader/react-web-module
+  tag: "dev05"
+
+replicaCount: 2
+
+ingress:
+  enabled: true
+  className: alb
+  host: docuploader-monitor.dev05.k8s.opus2dev.com
+  # certificateArn is intentionally blank here — set it via --set or a private
+  # overlay so the wildcard cert ARN isn't committed. Look it up with:
+  #   aws acm list-certificates --region eu-west-1
+  certificateArn: ""

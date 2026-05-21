@@ -1,0 +1,63 @@
+workloadName: office-conversion-aspose-container
+iamRoleArn: ""              # supplied by overlay from platform-iam-and-security output
+image:
+  repository: ""            # supplied by overlay from platform-network-and-compute ECR output
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+environment: sandbox
+replicaCount: 2
+
+# ≥4GiB needed for Aspose.Total document parsing; not Guaranteed-QoS because
+# large documents can spike. Set requests = limits in production envs if QoS
+# is required.
+resources:
+  requests:
+    cpu: 1000m
+    memory: 2Gi
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+
+# Aspose license file mounted from a k8s Secret. The Secret is synced into
+# the namespace by External Secrets Operator (source: AWS Secrets Manager
+# entry `aspose-total-license`). License binary is NEVER baked into the image.
+extraVolumes:
+  - name: aspose-license
+    secret:
+      secretName: aspose-total-license
+      items:
+        - key: Aspose.Total.Product.Family.lic
+          path: Aspose.Total.Product.Family.lic
+          mode: 0400
+
+extraVolumeMounts:
+  - name: aspose-license
+    mountPath: /etc/aspose
+    readOnly: true
+
+extraEnv:
+  - name: ASPOSE_LICENSE_PATH
+    value: /etc/aspose/Aspose.Total.Product.Family.lic
+  - name: LISTEN_ADDR
+    value: ":8080"
+
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 30      # Aspose init takes a few seconds
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3

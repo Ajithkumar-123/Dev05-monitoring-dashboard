@@ -1,0 +1,52 @@
+# Shared values applied to every docuploader Application in dev05.
+# Per-unit overrides in <unit>.yaml win over these.
+
+environment: dev05
+
+otlp:
+  # Verified 2026-05-13 against DEV05-EKS-CLUSTER: the Grafana k8s monitoring
+  # stack runs in the `grafana` namespace (not `observability`); the OTLP gRPC
+  # receiver is the `grafana-k8s-monitoring-alloy-receiver` Service on :4317
+  # (named port `otlp-grpc`; HTTP is :4318 on the same Service).
+  endpoint: "http://grafana-k8s-monitoring-alloy-receiver.grafana.svc.cluster.local:4317"
+  serviceNamespace: "docuploader-dev05"
+
+extraEnv:
+  - name: AWS_REGION
+    value: eu-west-1
+  - name: DOCUPLOADER_ENVIRONMENT
+    value: dev05
+  - name: DDB_WORKSPACES_TABLE
+    value: docuploader-api-workspaces
+  - name: DDB_BATCHES_TABLE
+    value: docuploader-api-batches
+  - name: DDB_DOCUMENTS_TABLE
+    value: docuploader-api-documents
+  - name: DDB_DOCUMENTS_IDEMPOTENCY_INDEX
+    value: idempotency-index
+  - name: DDB_AUDIT_EVENTS_TABLE
+    value: docuploader-api-audit-events
+  - name: DDB_CONTENT_HASHES_TABLE
+    value: docuploader-api-content-hashes
+  - name: DDB_PIPELINE_FILES_TABLE
+    value: docuploader-api-pipeline-files
+  - name: DDB_PIPELINE_FILES_FOLDERPATH_INDEX
+    value: folderPath-index
+  - name: DDB_TASK_TOKENS_TABLE
+    value: docuploader-api-task-tokens
+  - name: S3_STAGING_BUCKET
+    value: docuploader-staging-dev05
+  - name: S3_PIPELINE_BUCKET
+    value: docuploader-pipeline-dev05
+  - name: S3_PIPELINE_CONFIG_BUCKET
+    value: docuploader-pipeline-config-dev05
+  - name: S3_AUDIT_ARCHIVE_BUCKET
+    value: docuploader-audit-archive-dev05
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi

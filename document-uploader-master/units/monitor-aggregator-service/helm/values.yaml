@@ -1,0 +1,65 @@
+workloadName: monitor-aggregator-service
+# This service makes only outbound HTTP calls to other in-cluster services,
+# not to AWS APIs — no IRSA needed.
+iamRoleArn: ""
+
+image:
+  repository: ""           # filled by overlay
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+
+environment: sandbox
+replicaCount: 1
+
+resources:
+  requests: { cpu: 50m, memory: 64Mi }
+  limits:   { cpu: 100m, memory: 128Mi }
+
+# Wires the config file into /etc/monitor/monitor.config.yaml via a ConfigMap.
+config:
+  pollInterval: 10s
+  probeTimeout: 2s
+  # Override at install time, e.g.:
+  #   --set-file 'config.servicesYaml=./monitor.config.yaml'
+  # When empty the deployment still starts but the poller has nothing to do.
+  servicesYaml: ""
+
+extraEnv:
+  - { name: MONITOR_CONFIG, value: "/etc/monitor/monitor.config.yaml" }
+  - { name: LISTEN_ADDR,    value: ":8080" }
+
+extraVolumes:
+  - name: monitor-config
+    configMap:
+      name: monitor-aggregator-service-config
+
+extraVolumeMounts:
+  - name: monitor-config
+    mountPath: /etc/monitor
+    readOnly: true
+
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 30
+    timeoutSeconds: 3
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /healthz
+      port: 8080
+    initialDelaySeconds: 2
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+service:
+  port: 8080
+  targetPort: 8080

@@ -1,0 +1,33 @@
+workloadName: pdf-processing-service
+iamRoleArn: ""
+image: { repository: "", tag: "0.1.0", pullPolicy: IfNotPresent }
+otlp: { endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317", serviceNamespace: "docuploader" }
+environment: sandbox
+replicaCount: 2
+resources:
+  requests: { cpu: 1000m, memory: 1Gi }
+  limits:   { cpu: 1000m, memory: 1Gi }
+extraEnv:
+  - { name: PDF_PROCESSING_QUEUE_URL,  valueFrom: { configMapKeyRef: { name: pipeline-queues, key: pdf_processing } } }
+  - { name: OUTPUT_ASSEMBLY_QUEUE_URL, valueFrom: { configMapKeyRef: { name: pipeline-queues, key: output_assembly } } }
+  - { name: PIPELINE_BUCKET,           value: "docuploader-pipeline" }
+
+# REVIEW: PID-1-alive probe is a placeholder that passes as long as the
+# worker process (PID 1) is running. Tighten to a real readiness signal
+# once the worker exposes one — e.g., HTTP /healthz on a sidecar port,
+# or a touch-file written after the first successful SQS poll.
+probes:
+  liveness:
+    exec:
+      command: ["/bin/sh", "-c", "kill -0 1"]
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    exec:
+      command: ["/bin/sh", "-c", "kill -0 1"]
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3

@@ -1,0 +1,63 @@
+workloadName: react-web-module
+# react-web-module is a static nginx-served SPA. It makes no AWS API calls
+# from the pod itself, so iamRoleArn is intentionally empty — we skip the
+# chassis serviceAccount include (which requires IRSA) and create a plain SA.
+iamRoleArn: ""
+
+image:
+  repository: ""           # filled by overlay e.g. 537462380503.dkr.ecr.eu-west-1.amazonaws.com/docuploader/react-web-module
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+
+environment: sandbox
+replicaCount: 2
+
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits:   { cpu: 100m, memory: 128Mi }
+
+# nginx serves the SPA on port 80; container has no special env vars
+# (build-time VITE_* values are baked into the JS bundle).
+extraEnv: []
+
+# nginx /healthz returns 200 (defined in deploy/dockerfiles/ts-web.Dockerfile)
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 30
+    timeoutSeconds: 3
+    failureThreshold: 3
+  readiness:
+    httpGet:
+      path: /healthz
+      port: 80
+    initialDelaySeconds: 2
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+service:
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: false
+  className: alb
+  # External hostname — set per environment overlay
+  host: ""
+  # ACM cert ARN for TLS — set per overlay
+  certificateArn: ""
+  # Annotations applied to the Ingress object. Defaults assume AWS Load
+  # Balancer Controller (the same controller the existing dev05 services use).
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"

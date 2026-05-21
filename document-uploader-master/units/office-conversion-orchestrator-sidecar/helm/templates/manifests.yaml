@@ -1,0 +1,45 @@
+{{- /* Two-container Pod: orchestrator-sidecar + office-conversion-aspose-container.
+       The Aspose container needs the licence Secret mounted into
+       /opt/aspose/license. */}}
+{{ include "docuploader-chassis.serviceAccount" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.workloadName }}
+    spec:
+      serviceAccountName: {{ .Values.workloadName }}
+      containers:
+        - name: orchestrator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            {{- include "docuploader-chassis.otlpEnvs" . | nindent 12 }}
+            {{- with .Values.extraEnv }}{{- toYaml . | nindent 12 }}{{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: aspose
+          image: "{{ .Values.aspose.image.repository }}:{{ .Values.aspose.image.tag }}"
+          ports:
+            - containerPort: 8081
+          volumeMounts:
+            - name: aspose-licence
+              mountPath: /opt/aspose/license
+              readOnly: true
+          resources:
+            {{- toYaml .Values.asposeResources | nindent 12 }}
+      volumes:
+        - name: aspose-licence
+          secret:
+            secretName: aspose-licence

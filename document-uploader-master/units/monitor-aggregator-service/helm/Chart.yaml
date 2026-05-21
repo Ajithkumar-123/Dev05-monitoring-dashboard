@@ -1,0 +1,11 @@
+apiVersion: v2
+name: monitor-aggregator-service
+description: Polls each docuploader service's /healthz and serves aggregated snapshots + SSE
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

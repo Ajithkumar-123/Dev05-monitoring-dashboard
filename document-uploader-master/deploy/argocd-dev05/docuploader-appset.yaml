@@ -1,0 +1,89 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: docuploader-dev05
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+
+  # Sync-wave strategy: resolvers come up first (wave 0), then the router that
+  # depends on them (wave 1), then workers that consume from SQS (wave 5),
+  # then the Aspose container with its license-mount cold-start (wave 8),
+  # then the web frontend last (wave 10). Negative-wave -10 is reserved for
+  # the namespace itself (set on namespace.yaml).
+  generators:
+    - list:
+        elements:
+          - { unit: workspace-resolver,                  archetype: grpc-resolver,    wave: "0"  }
+          - { unit: batch-resolver,                      archetype: grpc-resolver,    wave: "0"  }
+          - { unit: document-resolver,                   archetype: grpc-resolver,    wave: "0"  }
+          - { unit: wundergraph-router,                  archetype: router,           wave: "1"  }
+          - { unit: classification-service,              archetype: keda-ts,          wave: "5"  }
+          - { unit: ocr-service,                         archetype: keda-ts,          wave: "5"  }
+          - { unit: zip-extraction-service,              archetype: keda-ts,          wave: "5"  }
+          - { unit: output-assembly-service,             archetype: keda-ts,          wave: "5"  }
+          - { unit: slipsheet-service,                   archetype: keda-ts,          wave: "5"  }
+          - { unit: html-conversion-typescript-sidecar,  archetype: keda-ts,          wave: "5"  }
+          - { unit: tiff-cog-service,                    archetype: keda-ts,          wave: "5"  }
+          - { unit: image-tiff-conversion-service,       archetype: keda-ts,          wave: "5"  }
+          - { unit: media-conversion-service,            archetype: keda-ts,          wave: "5"  }
+          - { unit: email-extraction-service,            archetype: keda-go,          wave: "5"  }
+          - { unit: pdf-processing-service,              archetype: keda-py,          wave: "5"  }
+          - { unit: office-conversion-orchestrator-sidecar, archetype: keda-py,       wave: "5"  }
+          - { unit: office-conversion-aspose-container,  archetype: http-aspose,      wave: "8"  }
+          - { unit: react-web-module,                    archetype: web,              wave: "10" }
+
+  template:
+    metadata:
+      name: "docuploader-{{.unit}}"
+      labels:
+        docuploader.opus2.com/archetype: "{{.archetype}}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{.wave}}"
+    spec:
+      project: docuploader
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: docuploader-dev05
+
+      sources:
+        - repoURL: DOCUPLOADER_SRC_REPO_URL
+          targetRevision: DOCUPLOADER_TARGET_REVISION
+          path: "units/{{.unit}}/helm"
+          helm:
+            releaseName: "{{.unit}}"
+            valueFiles:
+              - "$values/deploy/argocd-dev05/values/_shared.yaml"
+              - "$values/deploy/argocd-dev05/values/{{.unit}}.yaml"
+            ignoreMissingValueFiles: true
+            parameters:
+              - name: image.tag
+                value: "$ARGOCD_APP_REVISION_SHORT"
+        - repoURL: DOCUPLOADER_SRC_REPO_URL
+          targetRevision: DOCUPLOADER_TARGET_REVISION
+          ref: values
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=false
+          - ServerSideApply=true
+          - RespectIgnoreDifferences=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 30s
+            maxDuration: 5m
+            factor: 2
+
+      revisionHistoryLimit: 5
+
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas

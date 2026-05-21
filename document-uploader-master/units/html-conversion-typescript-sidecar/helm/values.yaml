@@ -1,0 +1,26 @@
+workloadName: html-conversion-typescript-sidecar
+iamRoleArn: ""
+image: { repository: "", tag: "0.1.0", pullPolicy: IfNotPresent }
+otlp: { endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317", serviceNamespace: "docuploader" }
+environment: sandbox
+replicaCount: 2
+resources:
+  requests: { cpu: 500m, memory: 1Gi }
+  limits:   { cpu: 500m, memory: 1Gi }
+extraEnv:
+  - { name: CONVERT_HTML_QUEUE_URL,    valueFrom: { configMapKeyRef: { name: pipeline-queues, key: convert_html } } }
+  - { name: OUTPUT_ASSEMBLY_QUEUE_URL, valueFrom: { configMapKeyRef: { name: pipeline-queues, key: output_assembly } } }
+  - { name: PIPELINE_BUCKET,           value: "docuploader-pipeline" }
+  - { name: GOTENBERG_URL,             value: "http://localhost:3000" }
+
+# Gotenberg sidecar config (folded in from the deleted standalone
+# html-conversion-gotenberg-container chart per R-3). The Gotenberg container
+# runs in the same Pod as ts-sidecar and serves HTTP on :3000.
+gotenberg:
+  image:
+    repository: "gotenberg/gotenberg"
+    tag: "8"
+  port: 3000
+  resources:
+    requests: { cpu: 500m, memory: 1Gi }
+    limits:   { cpu: 500m, memory: 1Gi }

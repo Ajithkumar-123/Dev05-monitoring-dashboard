@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: docuploader
+  namespace: argocd
+spec:
+  description: Docuploader stack (19 services) for dev05
+
+  sourceRepos:
+    - https://github.com/opus2-automation/argocd-gitops-development.git
+    - DOCUPLOADER_SRC_REPO_URL
+
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: docuploader-dev05
+
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  orphanedResources:
+    warn: true

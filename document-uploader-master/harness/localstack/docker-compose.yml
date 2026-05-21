@@ -1,0 +1,23 @@
+# LocalStack — local AWS mock for Tier-2 integration testing of LIB-04.
+# Brings up a single container on :4566 mocking the AWS services LIB-04
+# touches (DynamoDB, S3, KMS, Secrets Manager, SQS). No real AWS credentials
+# needed — LocalStack accepts any. No outbound calls to AWS.
+
+services:
+  localstack:
+    container_name: docuploader-localstack
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"        # Unified edge port for all services
+    environment:
+      SERVICES: "dynamodb,s3,kms,secretsmanager,sqs,iam,events"
+      DEBUG: "0"
+      AWS_DEFAULT_REGION: "eu-west-1"
+      PERSISTENCE: "0"     # Reset state on restart (Tier-2 should be reproducible)
+      LS_LOG: "WARN"       # Reduce noise; flip to INFO for debugging
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s

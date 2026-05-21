@@ -1,0 +1,3 @@
+{{ include "docuploader-chassis.serviceAccount" . }}
+---
+{{ include "docuploader-chassis.deployment" . }}

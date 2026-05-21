@@ -1,0 +1,10 @@
+apiVersion: v2
+name: pdf-processing-service
+description: PDF repair (pikepdf) + page-level ops + OCR text-layer assembly (Python)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

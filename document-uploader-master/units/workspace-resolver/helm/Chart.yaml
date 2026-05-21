@@ -1,0 +1,11 @@
+apiVersion: v2
+name: workspace-resolver
+description: Workspace gRPC resolver — workspaces table CRUD + per-tenant KMS-alias provisioning (A27)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

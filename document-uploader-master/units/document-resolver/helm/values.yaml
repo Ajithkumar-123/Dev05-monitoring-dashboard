@@ -1,0 +1,32 @@
+workloadName: document-resolver
+iamRoleArn: ""
+image:
+  repository: ""
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+environment: sandbox
+replicaCount: 3
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+extraEnv:
+  - name: LISTEN_ADDR
+    value: ":50053"
+  - name: STAGING_BUCKET
+    value: "docuploader-api-staging"
+  - name: PRESIGN_TTL
+    value: "15m"
+probes:
+  liveness:
+    grpc:
+      port: 50053
+  readiness:
+    grpc:
+      port: 50053

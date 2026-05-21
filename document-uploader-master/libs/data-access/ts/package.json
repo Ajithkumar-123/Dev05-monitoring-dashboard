@@ -1,0 +1,36 @@
+{
+  "name": "@docuploader/data-access",
+  "version": "0.1.0",
+  "description": "Typed data-access library for docuploader DynamoDB tables (TypeScript)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./workspaces": "./dist/workspaces/index.js",
+    "./batches": "./dist/batches/index.js",
+    "./documents": "./dist/documents/index.js",
+    "./auditevents": "./dist/auditevents/index.js",
+    "./contenthashes": "./dist/contenthashes/index.js",
+    "./pipelinefiles": "./dist/pipelinefiles/index.js",
+    "./tasktokens": "./dist/tasktokens/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0",
+    "fast-check": "^3.19.0",
+    "allure-vitest": "^2.15.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

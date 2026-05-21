@@ -1,0 +1,17 @@
+# pnpm workspace manifest. Declares which packages live under this root so
+# `workspace:*` deps resolve cleanly (e.g., consumers of @docuploader/data-access).
+#
+# All TypeScript packages in the repo (the shared library + the units that
+# build TS images) should be listed here.
+packages:
+  - "libs/data-access/ts"
+  - "units/classification-service"
+  - "units/ocr-service"
+  - "units/zip-extraction-service"
+  - "units/output-assembly-service"
+  - "units/slipsheet-service"
+  - "units/html-conversion-typescript-sidecar"
+  - "units/tiff-cog-service"
+  - "units/image-tiff-conversion-service"
+  - "units/media-conversion-service"
+  - "units/react-web-module"

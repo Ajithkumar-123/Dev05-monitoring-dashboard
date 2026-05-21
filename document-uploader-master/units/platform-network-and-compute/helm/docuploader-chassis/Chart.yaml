@@ -1,0 +1,8 @@
+apiVersion: v2
+name: docuploader-chassis
+description: Library chart providing shared K8s manifest templates for every docuploader workload (ServiceAccount with IRSA, Deployment with OTLP envs, Guaranteed-QoS resources). Consumed by per-unit charts.
+type: library
+version: 0.1.0
+appVersion: "0.1.0"
+maintainers:
+  - name: docuploader-platform

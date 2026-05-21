@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wget -q https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz -O gtest.tar.gz)",
+      "Bash(tar -xzf gtest.tar.gz)",
+      "Bash(mv googletest-1.14.0 gtest-src)",
+      "Bash(mkdir -p /tmp/gtest-build)",
+      "Bash(g++ -std=c++17 -isystem include -I. -pthread -c src/gtest-all.cc -o /tmp/gtest-build/gtest-all.o)",
+      "Bash(g++ -std=c++17 -isystem include -I. -pthread -c src/gtest_main.cc -o /tmp/gtest-build/gtest_main.o)",
+      "Bash(ar rcs *)",
+      "Bash(g++ -std=c++20 -O2 -pthread -isystem /tmp/gtest-src/googletest/include -I include -o /tmp/aspose-render-test src/render.cpp tests/render_test.cpp /tmp/gtest-build/libgtest.a /tmp/gtest-build/libgtest_main.a)",
+      "Bash(/tmp/aspose-render-test)",
+      "Bash(./new-cluster.sh -c dev08 -r eu-west-1)",
+      "Bash(find argo/applications/environments/_template -type f)",
+      "Bash(ls platform-infrastructure/environments/dev07/)"
+    ]
+  }
+}

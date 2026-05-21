@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package docuploader.batch.v1;
+
+option go_package = "github.com/opus2/docuploader/units/batch-resolver/proto/batchv1";
+
+import "google/protobuf/timestamp.proto";
+
+service BatchService {
+  rpc CreateBatch(CreateBatchRequest) returns (Batch);
+  rpc CloseBatch(CloseBatchRequest) returns (Batch);
+  rpc GetBatch(GetBatchRequest) returns (Batch);
+}
+
+message Batch {
+  string batch_id = 1;
+  string tenant_id = 2;
+  string workspace_id = 3;
+  string status = 4;        // OPEN | CLOSED
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CreateBatchRequest {
+  string workspace_id = 1;
+  string idempotency_key = 2;
+}
+
+message CloseBatchRequest {
+  string batch_id = 1;
+  string idempotency_key = 2;
+}
+
+message GetBatchRequest {
+  string batch_id = 1;
+}

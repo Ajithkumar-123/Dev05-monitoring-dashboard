@@ -1,0 +1,94 @@
+name: Build & push images to ECR
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag (defaults to short SHA)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  id-token: write   # OIDC federation to AWS
+
+env:
+  AWS_REGION: eu-west-1
+  AWS_ACCOUNT_ID: "537462380503"
+  ECR_REGISTRY: 537462380503.dkr.ecr.eu-west-1.amazonaws.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          # archetype: which Dockerfile template under deploy/dockerfiles/ to use
+          - { unit: workspace-resolver,                  archetype: go-service }
+          - { unit: batch-resolver,                      archetype: go-service }
+          - { unit: document-resolver,                   archetype: go-service }
+          - { unit: wundergraph-router,                  archetype: go-service }
+          - { unit: email-extraction-service,            archetype: go-service }
+          - { unit: pre-token-generation-lambda,         archetype: go-lambda }
+          - { unit: document-event-handler-lambda,       archetype: go-lambda }
+          - { unit: audit-event-storage-lambda,          archetype: go-lambda }
+          - { unit: update-document-state-lambda,        archetype: go-lambda }
+          - { unit: virus-scanning-service,              archetype: go-service }
+          - { unit: classification-service,              archetype: ts-service }
+          - { unit: ocr-service,                         archetype: ts-service }
+          - { unit: zip-extraction-service,              archetype: ts-service }
+          - { unit: output-assembly-service,             archetype: ts-service }
+          - { unit: slipsheet-service,                   archetype: ts-service }
+          - { unit: html-conversion-typescript-sidecar,  archetype: ts-service }
+          - { unit: tiff-cog-service,                    archetype: ts-service }
+          - { unit: image-tiff-conversion-service,       archetype: ts-service }
+          - { unit: media-conversion-service,            archetype: ts-service }
+          - { unit: react-web-module,                    archetype: ts-web }
+          - { unit: pdf-processing-service,              archetype: python-service }
+          - { unit: office-conversion-orchestrator-sidecar, archetype: python-service }
+          - { unit: office-conversion-aspose-container,  archetype: cpp-aspose }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-actions-docuploader-ecr-push
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [[ -n "${{ github.event.inputs.tag }}" ]]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build & push ${{ matrix.unit }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/dockerfiles/${{ matrix.archetype }}.Dockerfile
+          build-args: |
+            UNIT_NAME=${{ matrix.unit }}
+          push: true
+          platforms: linux/amd64
+          tags: |
+            ${{ env.ECR_REGISTRY }}/docuploader/${{ matrix.unit }}:${{ steps.tag.outputs.tag }}
+            ${{ env.ECR_REGISTRY }}/docuploader/${{ matrix.unit }}:latest
+          cache-from: type=gha,scope=${{ matrix.unit }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.unit }}

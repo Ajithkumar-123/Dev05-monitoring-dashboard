@@ -1,0 +1,50 @@
+{{/*
+  monitor-aggregator-service helm chart.
+  Composes the chassis Deployment (no IRSA — uses plain ServiceAccount).
+*/}}
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+    app.kubernetes.io/component: docuploader
+---
+{{ include "docuploader-chassis.deployment" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.workloadName }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+data:
+  monitor.config.yaml: |
+    poll_interval: {{ .Values.config.pollInterval | default "10s" }}
+    probe_timeout: {{ .Values.config.probeTimeout | default "2s" }}
+{{- if .Values.config.servicesYaml }}
+    services:
+{{ .Values.config.servicesYaml | indent 6 }}
+{{- else }}
+    services: []
+{{- end }}

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Note: do NOT set a top-level `namespace:` here. Kustomize applies it to
+# Namespace kind too, which overrides metadata.name (renames the namespace).
+# Each resource below already specifies its own metadata.namespace inline.
+
+resources:
+  - namespace.yaml
+  - project.yaml
+  - docuploader-appset.yaml
+
+# values/ is consumed by the ApplicationSet template via `$values/...`
+# refs, not by Kustomize. Kept alongside for co-location.

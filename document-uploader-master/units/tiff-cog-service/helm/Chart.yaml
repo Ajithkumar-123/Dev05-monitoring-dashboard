@@ -1,0 +1,10 @@
+apiVersion: v2
+name: tiff-cog-service
+description: TIFF-to-COG preprocessor (gdal-async) enabling ranged extraction downstream
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

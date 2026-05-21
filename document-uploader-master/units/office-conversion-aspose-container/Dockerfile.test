@@ -1,0 +1,50 @@
+# Conan-in-Docker test harness for office-conversion-aspose-container.
+#
+# Anyone on the team runs the C++ tests with `make test` — no local Conan /
+# CMake / GoogleTest install required. The image's default CMD runs ctest;
+# `docker run --rm <image>` exits with ctest's status.
+#
+# The production runtime Dockerfile (built separately) reuses the same
+# Conan install layer via a multi-stage cache mount.
+
+FROM ubuntu:24.04 AS test-builder
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_BREAK_SYSTEM_PACKAGES=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        ninja-build \
+        python3-pip \
+        git \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir "conan>=2,<3"
+
+WORKDIR /src
+
+# Install Conan deps first so this layer caches across source-only changes.
+COPY conanfile.txt .
+RUN conan profile detect --force && \
+    conan install . \
+        --output-folder=build \
+        --build=missing \
+        -s build_type=Release \
+        -s compiler.cppstd=20
+
+# Now copy sources and build.
+COPY CMakeLists.txt .
+COPY include ./include
+COPY src ./src
+COPY tests ./tests
+
+RUN cmake -S . -B build/build \
+        -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_TOOLCHAIN_FILE=build/build/Release/generators/conan_toolchain.cmake \
+    && cmake --build build/build --parallel
+
+# `docker run --rm <image>` returns ctest's exit code → CI uses it directly.
+CMD ["ctest", "--test-dir", "build/build", "--output-on-failure"]

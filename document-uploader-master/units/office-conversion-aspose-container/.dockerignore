@@ -1,0 +1,9 @@
+# Anything that doesn't belong inside the Docker build context — keeps the
+# image small and the Conan-install layer cache valid across local edits.
+build/
+.vscode/
+.idea/
+.cache/
+*.swp
+*.swo
+.DS_Store

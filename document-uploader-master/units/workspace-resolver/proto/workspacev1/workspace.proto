@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package docuploader.workspace.v1;
+
+option go_package = "github.com/opus2/docuploader/units/workspace-resolver/proto/workspacev1";
+
+import "google/protobuf/timestamp.proto";
+
+service WorkspaceService {
+  rpc CreateWorkspace(CreateWorkspaceRequest) returns (Workspace);
+  rpc UpdateWorkspace(UpdateWorkspaceRequest) returns (Workspace);
+  rpc GetWorkspace(GetWorkspaceRequest) returns (Workspace);
+}
+
+message Workspace {
+  string workspace_id = 1;
+  string tenant_id = 2;
+  string status = 3;                              // ACTIVE | ARCHIVED
+  RetentionPolicy retention_policy = 4;
+  EncryptionConfig encryption_config = 5;
+  PipelineConfig pipeline_config = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message RetentionPolicy {
+  int32 input_retention_days = 1;
+}
+
+message EncryptionConfig {
+  string kms_alias_name = 1;
+}
+
+message PipelineConfig {
+  repeated string allowed_extensions = 1;
+  repeated string forced_slipsheet_extensions = 2;
+}
+
+message CreateWorkspaceRequest {
+  string tenant_id = 1;
+  RetentionPolicy retention_policy = 2;
+  PipelineConfig pipeline_config = 3;
+  string idempotency_key = 4;
+}
+
+message UpdateWorkspaceRequest {
+  string workspace_id = 1;
+  RetentionPolicy retention_policy = 2;
+  PipelineConfig pipeline_config = 3;
+  string idempotency_key = 4;
+}
+
+message GetWorkspaceRequest {
+  string workspace_id = 1;
+}

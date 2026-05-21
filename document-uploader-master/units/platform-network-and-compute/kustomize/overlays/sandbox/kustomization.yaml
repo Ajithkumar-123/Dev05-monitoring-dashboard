@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: docuploader
+
+resources:
+  - ../../base/namespaces
+  - ../../base/service-accounts
+  - ../../base/ingress
+
+# Sandbox-specific patches. Real ARNs come from `terraform output` after
+# applying platform-iam-and-security and platform-network-and-compute.
+# The deploy runbook substitutes these via `kustomize edit` or by piping
+# the kustomize build through `envsubst`.
+patches:
+  - target:
+      kind: Ingress
+      name: docuploader-router
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: docuploader-api.sandbox.opus2.internal
+      - op: replace
+        path: /metadata/annotations/alb.ingress.kubernetes.io~1certificate-arn
+        value: ${ACM_CERTIFICATE_ARN}

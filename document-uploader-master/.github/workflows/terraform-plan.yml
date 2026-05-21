@@ -1,0 +1,88 @@
+name: Terraform plan (4 platform units)
+
+# Plan-only on PRs. NEVER auto-applies. Apply is manual via workflow_dispatch
+# in a separate workflow with environment protection rules.
+
+on:
+  pull_request:
+    paths:
+      - "units/platform-data/terraform/**"
+      - "units/platform-iam-and-security/terraform/**"
+      - "units/platform-network-and-compute/terraform/**"
+      - "units/platform-orchestration/terraform/**"
+      - ".github/workflows/terraform-plan.yml"
+
+permissions:
+  contents: read
+  id-token: write          # OIDC federation to AWS
+  pull-requests: write     # post the plan as PR comment
+
+env:
+  AWS_REGION: eu-west-1
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unit:
+          - platform-data
+          - platform-iam-and-security
+          - platform-network-and-compute
+          - platform-orchestration
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (read-only role)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::537462380503:role/github-actions-docuploader-terraform-plan
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.0"
+
+      - name: Init
+        working-directory: units/${{ matrix.unit }}/terraform
+        run: terraform init -input=false
+
+      - name: Plan
+        id: plan
+        working-directory: units/${{ matrix.unit }}/terraform
+        run: |
+          set +e
+          terraform plan -input=false -no-color -out=plan.bin \
+            -var "environment=dev05" \
+            > plan.txt 2>&1
+          echo "exitcode=$?" >> $GITHUB_OUTPUT
+          # truncate for PR comment
+          head -c 60000 plan.txt > plan.short.txt
+
+      - name: Comment plan on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const out = fs.readFileSync('units/${{ matrix.unit }}/terraform/plan.short.txt', 'utf8');
+            const exitcode = '${{ steps.plan.outputs.exitcode }}';
+            const body = [
+              `### Terraform plan — ${{ matrix.unit }} (exit ${exitcode})`,
+              '```hcl',
+              out,
+              '```',
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
+
+      - name: Fail if plan errored
+        if: steps.plan.outputs.exitcode != '0'
+        run: |
+          echo "::error::terraform plan failed (exit ${{ steps.plan.outputs.exitcode }})"
+          exit 1

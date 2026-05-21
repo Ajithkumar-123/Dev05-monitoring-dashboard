@@ -1,0 +1,11 @@
+apiVersion: v2
+name: batch-resolver
+description: Batch gRPC resolver — batches table CRUD + OPEN/CLOSED state transitions
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: office-conversion-aspose-container
+description: C++ Aspose.Total HTTP service for office-document → PDF conversion (DOCX/XLSX/PPTX). License binary mounted from a k8s Secret at runtime; image contains no licensed material.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

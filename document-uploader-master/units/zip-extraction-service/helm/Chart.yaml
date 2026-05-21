@@ -1,0 +1,10 @@
+apiVersion: v2
+name: zip-extraction-service
+description: Streaming ZIP extraction with per-entry fan-out into classification re-entry
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

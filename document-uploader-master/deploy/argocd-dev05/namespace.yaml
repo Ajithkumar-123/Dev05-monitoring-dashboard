@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: docuploader-dev05
+  labels:
+    docuploader.opus2.com/tenant: dev05
+    docuploader.opus2.com/environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"

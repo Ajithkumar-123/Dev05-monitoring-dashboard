@@ -1,0 +1,33 @@
+workloadName: zip-extraction-service
+iamRoleArn: ""
+image: { repository: "", tag: "0.1.0", pullPolicy: IfNotPresent }
+otlp: { endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317", serviceNamespace: "docuploader" }
+environment: sandbox
+replicaCount: 2
+resources:
+  requests: { cpu: 500m, memory: 512Mi }
+  limits:   { cpu: 500m, memory: 512Mi }
+extraEnv:
+  - { name: ARCHIVE_QUEUE_URL,         valueFrom: { configMapKeyRef: { name: pipeline-queues, key: archive } } }
+  - { name: CLASSIFICATION_QUEUE_URL,  valueFrom: { configMapKeyRef: { name: pipeline-queues, key: classification } } }
+  - { name: STAGING_BUCKET,            value: "docuploader-api-staging" }
+
+# REVIEW: PID-1-alive probe is a placeholder that passes as long as the
+# worker process (PID 1) is running. Tighten to a real readiness signal
+# once the worker exposes one — e.g., HTTP /healthz on a sidecar port,
+# or a touch-file written after the first successful SQS poll.
+probes:
+  liveness:
+    exec:
+      command: ["/bin/sh", "-c", "kill -0 1"]
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    exec:
+      command: ["/bin/sh", "-c", "kill -0 1"]
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 3
+    failureThreshold: 3

@@ -1,0 +1,64 @@
+{{/*
+  react-web-module helm chart. Composes the docuploader-chassis Deployment
+  with a vanilla ServiceAccount (no IRSA — the dashboard makes no AWS API
+  calls from the pod), plus a ClusterIP Service and an optional Ingress.
+*/}}
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+    app.kubernetes.io/component: docuploader
+    app.kubernetes.io/managed-by: helm
+---
+{{ include "docuploader-chassis.deployment" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+  annotations:
+    {{- range $k, $v := .Values.ingress.annotations }}
+    {{ $k }}: {{ $v | quote }}
+    {{- end }}
+    {{- if .Values.ingress.certificateArn }}
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.workloadName }}
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

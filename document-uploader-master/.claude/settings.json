@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node .ai-dlc-bootstrap/scaffold/scaffold.js:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(rm:*)",
+      "Bash(AIDLC_ARGS=* node .ai-dlc-bootstrap/scaffold/scaffold.js:*)"
+    ]
+  }
+}

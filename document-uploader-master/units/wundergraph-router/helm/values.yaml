@@ -1,0 +1,43 @@
+workloadName: wundergraph-router
+iamRoleArn: ""
+image:
+  repository: ""
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+environment: sandbox
+replicaCount: 3
+resources:
+  requests:
+    cpu: 1000m
+    memory: 1Gi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+extraEnv:
+  - name: AUDIT_SQS_QUEUE_URL
+    valueFrom:
+      configMapKeyRef:
+        name: wundergraph-audit-emission
+        key: AUDIT_SQS_QUEUE_URL
+  - name: AUDIT_REDACTION_FIELDS
+    valueFrom:
+      configMapKeyRef:
+        name: wundergraph-audit-emission
+        key: AUDIT_REDACTION_FIELDS
+  - name: AUDIT_EMISSION_ENABLED
+    valueFrom:
+      configMapKeyRef:
+        name: wundergraph-audit-emission
+        key: AUDIT_EMISSION_ENABLED
+probes:
+  liveness:
+    httpGet:
+      path: /healthz
+      port: 8080
+  readiness:
+    httpGet:
+      path: /healthz
+      port: 8080

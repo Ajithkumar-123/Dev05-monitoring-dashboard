@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package docuploader.document.v1;
+
+option go_package = "github.com/opus2/docuploader/units/document-resolver/proto/documentv1";
+
+import "google/protobuf/timestamp.proto";
+
+service DocumentService {
+  rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse);
+  rpc UpdateDocumentStatus(UpdateDocumentStatusRequest) returns (Document);
+  rpc GetDocument(GetDocumentRequest) returns (Document);
+  rpc SubscribeStatusChanged(SubscribeStatusChangedRequest) returns (stream Document);
+}
+
+message Document {
+  string document_id = 1;
+  string tenant_id = 2;
+  string workspace_id = 3;
+  string batch_id = 4;
+  string status = 5;
+  string pipeline_stage = 6;
+  string idempotency_key = 7;
+  repeated Output outputs = 8;
+  ProcessingError processing_error = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}
+
+message Output {
+  string type = 1;
+  string s3_key = 2;
+  string native_trigger = 3;
+}
+
+message ProcessingError {
+  string code = 1;
+  string message = 2;
+  string detail = 3;
+  bool retryable = 4;
+  map<string, string> extensions = 5;
+}
+
+message CreateDocumentRequest {
+  string batch_id = 1;
+  string filename = 2;
+  string idempotency_key = 3;
+}
+
+message CreateDocumentResponse {
+  Document document = 1;
+  string presigned_url = 2;
+  google.protobuf.Timestamp presigned_url_expires_at = 3;
+}
+
+message UpdateDocumentStatusRequest {
+  string document_id = 1;
+  string to_status = 2;
+  string pipeline_stage = 3;
+  string idempotency_key = 4;
+  ProcessingError processing_error = 5;
+  repeated Output outputs = 6;
+}
+
+message GetDocumentRequest {
+  string document_id = 1;
+}
+
+message SubscribeStatusChangedRequest {
+  string document_id = 1;
+}

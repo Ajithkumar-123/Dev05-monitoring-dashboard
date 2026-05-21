@@ -1,0 +1,30 @@
+# Default values for the docuploader-chassis library chart.
+# Consumers override these via their per-unit chart's values.yaml.
+
+# Required: name of the workload (matches IAM role + ServiceAccount + Deployment).
+workloadName: ""
+
+# Required: IAM role ARN to bind to the ServiceAccount via IRSA.
+iamRoleArn: ""
+
+# Required: container image.
+image:
+  repository: ""
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# Required for OTLP propagation. Set once cluster-wide; defaults below assume
+# Grafana Alloy is reachable at this service.
+otlp:
+  endpoint: "http://grafana-alloy.observability.svc.cluster.local:4317"
+  serviceNamespace: "docuploader"
+
+# Guaranteed-QoS budget. Per `tech-environment.md`, all pipeline workers are
+# Guaranteed-QoS. Consumer charts MUST set both requests and limits to equal
+# values for CPU and memory.
+resources: {}
+
+# Optional probes.
+probes:
+  liveness: {}
+  readiness: {}

@@ -1,0 +1,25 @@
+# gRPC resolver archetype — applies the IRSA role for workspaces table +
+# tenant CMK alias provisioning. Pattern mirrored by batch-resolver,
+# document-resolver, wundergraph-router (with their own roles + ports).
+
+image:
+  repository: 537462380503.dkr.ecr.eu-west-1.amazonaws.com/docuploader/workspace-resolver
+  pullPolicy: IfNotPresent
+
+iamRoleArn: arn:aws:iam::537462380503:role/docuploader-workspace-resolver-dev05
+
+replicaCount: 2
+
+probes:
+  liveness:
+    grpc:
+      port: 50051
+  readiness:
+    grpc:
+      port: 50051
+
+extraEnv:
+  - name: LISTEN_ADDR
+    value: ":50051"
+  - name: KMS_TENANT_MASTER_ALIAS
+    value: alias/docuploader-tenant-master-dev05

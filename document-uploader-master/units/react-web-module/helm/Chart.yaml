@@ -1,0 +1,11 @@
+apiVersion: v2
+name: react-web-module
+description: Docuploader monitoring + admin dashboard (Vite-built React SPA, nginx-served)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+dependencies:
+  - name: docuploader-chassis
+    version: 0.1.0
+    repository: file://../../platform-network-and-compute/helm/docuploader-chassis

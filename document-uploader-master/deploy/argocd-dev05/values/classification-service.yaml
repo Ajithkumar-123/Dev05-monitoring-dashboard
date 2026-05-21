@@ -1,0 +1,32 @@
+# KEDA-scaled TypeScript service archetype — SQS-triggered worker. Pattern
+# mirrored by ocr, zip-extraction, output-assembly, slipsheet,
+# html-conversion-typescript-sidecar, tiff-cog, image-tiff-conversion,
+# media-conversion (with their own queue ARNs and IRSA roles).
+
+image:
+  repository: 537462380503.dkr.ecr.eu-west-1.amazonaws.com/docuploader/classification-service
+  pullPolicy: IfNotPresent
+
+iamRoleArn: arn:aws:iam::537462380503:role/docuploader-classification-service-dev05
+
+replicaCount: 0  # KEDA scales from zero
+
+keda:
+  enabled: true
+  minReplicas: 0
+  maxReplicas: 10
+  pollingInterval: 15
+  cooldownPeriod: 180
+  triggers:
+    - type: aws-sqs-queue
+      metadata:
+        queueURL: https://sqs.eu-west-1.amazonaws.com/537462380503/docuploader-classify-dev05
+        queueLength: "5"
+        awsRegion: eu-west-1
+        identityOwner: operator
+
+extraEnv:
+  - name: SQS_QUEUE_URL
+    value: https://sqs.eu-west-1.amazonaws.com/537462380503/docuploader-classify-dev05
+  - name: SQS_DLQ_URL
+    value: https://sqs.eu-west-1.amazonaws.com/537462380503/docuploader-classify-dlq-dev05

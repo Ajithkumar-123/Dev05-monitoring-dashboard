@@ -1,0 +1,38 @@
+{{- /* Two-container Pod: this sidecar + html-conversion-gotenberg-container.
+       The chassis deployment template renders the TS sidecar; the Gotenberg
+       container is appended below. The Pod's ServiceAccount is the chassis
+       one. */}}
+{{ include "docuploader-chassis.serviceAccount" . }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workloadName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.workloadName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.workloadName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.workloadName }}
+    spec:
+      serviceAccountName: {{ .Values.workloadName }}
+      containers:
+        - name: ts-sidecar
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            {{- include "docuploader-chassis.otlpEnvs" . | nindent 12 }}
+            {{- with .Values.extraEnv }}{{- toYaml . | nindent 12 }}{{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: gotenberg
+          image: "{{ .Values.gotenberg.image.repository }}:{{ .Values.gotenberg.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.gotenberg.port }}
+          resources:
+            {{- toYaml .Values.gotenberg.resources | nindent 12 }}

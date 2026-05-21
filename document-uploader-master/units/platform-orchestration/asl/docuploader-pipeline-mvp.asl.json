@@ -1,0 +1,328 @@
+{
+  "Comment": "docuploader pipeline MVP — 21-state Standard ASL with 14 Notify_X fire-and-forget interstitials. Two-Catch error pattern: per-Task DocumentProcessingError -> Slipsheet fallback; States.ALL -> HandleError -> Failed. Substitutable queue URLs are templated from terraform locals (see stepfunctions.tf).",
+  "StartAt": "Notify_QUEUED",
+  "States": {
+    "Notify_QUEUED": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "QUEUED", "phase": "queued" }
+      },
+      "ResultPath": null,
+      "Next": "Classify"
+    },
+
+    "Classify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${classification}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_CLASSIFYING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_CLASSIFYING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "PROCESSING", "phase": "classifying" }
+      },
+      "ResultPath": null,
+      "Next": "RouteChoice"
+    },
+
+    "RouteChoice": {
+      "Type": "Choice",
+      "Choices": [
+        { "Variable": "$.route", "StringEquals": "convert/office", "Next": "Notify_CONVERT_QUEUED" },
+        { "Variable": "$.route", "StringEquals": "convert/html",   "Next": "Notify_CONVERT_QUEUED" },
+        { "Variable": "$.route", "StringEquals": "convert/image",  "Next": "Notify_CONVERT_QUEUED" },
+        { "Variable": "$.route", "StringEquals": "convert/tiff",   "Next": "Notify_CONVERT_QUEUED" },
+        { "Variable": "$.route", "StringEquals": "ocr-direct",     "Next": "Notify_OCR_QUEUED" },
+        { "Variable": "$.route", "StringEquals": "email",          "Next": "Notify_EMAIL_PROCESSING" },
+        { "Variable": "$.route", "StringEquals": "archive",        "Next": "Notify_ARCHIVE_PROCESSING" },
+        { "Variable": "$.route", "StringEquals": "media",          "Next": "Notify_MEDIA_PROCESSING" },
+        { "Variable": "$.route", "StringEquals": "slipsheet",      "Next": "Notify_SLIPSHEETING" }
+      ],
+      "Default": "HandleError"
+    },
+
+    "Notify_CONVERT_QUEUED": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "QUEUED", "phase": "convert" }
+      },
+      "ResultPath": null,
+      "Next": "DispatchConvert"
+    },
+
+    "DispatchConvert": {
+      "Type": "Choice",
+      "Choices": [
+        { "Variable": "$.route", "StringEquals": "convert/office", "Next": "ConvertOffice" },
+        { "Variable": "$.route", "StringEquals": "convert/html",   "Next": "ConvertHTML" },
+        { "Variable": "$.route", "StringEquals": "convert/image",  "Next": "ConvertImage" },
+        { "Variable": "$.route", "StringEquals": "convert/tiff",   "Next": "ConvertTIFF" }
+      ],
+      "Default": "HandleError"
+    },
+
+    "ConvertOffice": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${convert_office}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_CONVERT_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "ConvertHTML": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${convert_html}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_CONVERT_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "ConvertImage": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${convert_image}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_CONVERT_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "ConvertTIFF": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${tiff_cog}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_CONVERT_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_CONVERT_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "PROCESSING", "phase": "convert" }
+      },
+      "ResultPath": null,
+      "Next": "Notify_PDF_PROCESSING"
+    },
+
+    "Notify_OCR_QUEUED": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "QUEUED", "phase": "ocr" }
+      },
+      "ResultPath": null,
+      "Next": "OCRDirect"
+    },
+
+    "OCRDirect": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${ocr_direct}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_OCR_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_OCR_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "PROCESSING", "phase": "ocr" }
+      },
+      "ResultPath": null,
+      "Next": "Notify_PDF_PROCESSING"
+    },
+
+    "Notify_EMAIL_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${email}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_PDF_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_ARCHIVE_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${archive}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_COMPLETED",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_MEDIA_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${media}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_PDF_PROCESSING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_SLIPSHEETING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "PROCESSING", "phase": "slipsheet" }
+      },
+      "ResultPath": null,
+      "Next": "Slipsheet"
+    },
+
+    "Slipsheet": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${slipsheet}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_ASSEMBLING",
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_PDF_PROCESSING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${pdf_processing}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_ASSEMBLING",
+      "Catch": [
+        { "ErrorEquals": ["DocumentProcessingError"], "Next": "Slipsheet" },
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_ASSEMBLING": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${output_assembly}",
+        "MessageBody.$": "$"
+      },
+      "ResultPath": null,
+      "Next": "Notify_COMPLETED",
+      "Catch": [
+        { "ErrorEquals": ["States.ALL"], "Next": "HandleError" }
+      ]
+    },
+
+    "Notify_COMPLETED": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "COMPLETED", "phase": "terminal" }
+      },
+      "ResultPath": null,
+      "Next": "Succeeded"
+    },
+
+    "Succeeded": {
+      "Type": "Succeed"
+    },
+
+    "HandleError": {
+      "Type": "Pass",
+      "Parameters": {
+        "documentId.$": "$.documentId",
+        "errorContext.$": "$.Error"
+      },
+      "ResultPath": "$.handled",
+      "Next": "Notify_FAILED"
+    },
+
+    "Notify_FAILED": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:sqs:sendMessage",
+      "Parameters": {
+        "QueueUrl": "${state_change}",
+        "MessageBody": { "documentId.$": "$.documentId", "toState": "FAILED", "phase": "terminal" }
+      },
+      "ResultPath": null,
+      "Next": "Failed"
+    },
+
+    "Failed": {
+      "Type": "Fail",
+      "Cause": "Document processing failed; see HandleError context and state-change-notification-queue for last-known phase."
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# Example aggregator config.
+# Copy to monitor.config.yaml and adjust URLs for your environment.
+# In-cluster the URLs are typically http://<unit>.docuploader.svc.cluster.local
+# External via Ingress: https://<unit>.dev05.k8s.opus2dev.com
+
+poll_interval: 10s
+probe_timeout: 2s
+
+services:
+  # --- Go services (5) ---
+  - { unit: workspace-resolver,                 archetype: go-service,        url: http://workspace-resolver.docuploader.svc.cluster.local:50051 }
+  - { unit: batch-resolver,                     archetype: go-service,        url: http://batch-resolver.docuploader.svc.cluster.local:50052 }
+  - { unit: document-resolver,                  archetype: go-service,        url: http://document-resolver.docuploader.svc.cluster.local:50053 }
+  - { unit: wundergraph-router,                 archetype: go-service,        url: http://wundergraph-router.docuploader.svc.cluster.local:9991 }
+  - { unit: email-extraction-service,           archetype: go-service,        url: http://email-extraction-service.docuploader.svc.cluster.local:8080 }
+
+  # --- Go lambdas (4) — note: lambdas don't typically expose HTTP, but if
+  # they're fronted by a small probe sidecar or API Gateway, point here. ---
+  - { unit: pre-token-generation-lambda,        archetype: go-lambda,         url: http://pre-token-generation-lambda.docuploader.svc.cluster.local:8080 }
+  - { unit: document-event-handler-lambda,      archetype: go-lambda,         url: http://document-event-handler-lambda.docuploader.svc.cluster.local:8080 }
+  - { unit: audit-event-storage-lambda,         archetype: go-lambda,         url: http://audit-event-storage-lambda.docuploader.svc.cluster.local:8080 }
+  - { unit: update-document-state-lambda,       archetype: go-lambda,         url: http://update-document-state-lambda.docuploader.svc.cluster.local:8080 }
+
+  # --- TS services (9) ---
+  - { unit: classification-service,             archetype: ts-service,        url: http://classification-service.docuploader.svc.cluster.local:8080 }
+  - { unit: ocr-service,                        archetype: ts-service,        url: http://ocr-service.docuploader.svc.cluster.local:8080 }
+  - { unit: zip-extraction-service,             archetype: ts-service,        url: http://zip-extraction-service.docuploader.svc.cluster.local:8080 }
+  - { unit: output-assembly-service,            archetype: ts-service,        url: http://output-assembly-service.docuploader.svc.cluster.local:8080 }
+  - { unit: slipsheet-service,                  archetype: ts-service,        url: http://slipsheet-service.docuploader.svc.cluster.local:8080 }
+  - { unit: html-conversion-typescript-sidecar, archetype: ts-service,        url: http://html-conversion-typescript-sidecar.docuploader.svc.cluster.local:8080 }
+  - { unit: tiff-cog-service,                   archetype: ts-service,        url: http://tiff-cog-service.docuploader.svc.cluster.local:8080 }
+  - { unit: image-tiff-conversion-service,      archetype: ts-service,        url: http://image-tiff-conversion-service.docuploader.svc.cluster.local:8080 }
+  - { unit: media-conversion-service,           archetype: ts-service,        url: http://media-conversion-service.docuploader.svc.cluster.local:8080 }
+
+  # --- TS web (1) ---
+  - { unit: react-web-module,                   archetype: ts-web,            url: http://react-web-module.docuploader.svc.cluster.local:80 }
+
+  # --- Python (2) ---
+  - { unit: pdf-processing-service,             archetype: python-service,    url: http://pdf-processing-service.docuploader.svc.cluster.local:8080 }
+  - { unit: office-conversion-orchestrator-sidecar, archetype: python-service, url: http://office-conversion-orchestrator-sidecar.docuploader.svc.cluster.local:8080 }
+
+  # --- C++ (1) ---
+  - { unit: office-conversion-aspose-container, archetype: cpp-aspose,        url: http://office-conversion-aspose-container.docuploader.svc.cluster.local:8080 }
